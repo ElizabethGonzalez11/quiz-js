@@ -1,5 +1,4 @@
 
-
 .answer-container {
   display: flex;
   margin-bottom: 0.5rem;
@@ -19,5 +18,13 @@
   color: white;
 }
 .choice-text {
+  width: 100%;
   padding: 1.5rem;
+}
+
+.correct {
+  background-color: gold;
+}
+.incorrect {
+  background-color: dimgrey;
 }
