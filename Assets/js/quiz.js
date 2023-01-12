@@ -1,4 +1,9 @@
 
+
+
+
+
+//-----------------------------------------//
 const question = document.getElementById('question');
 const choices = Array.from(document.getElementsByClassName('choice-text'));
 const correctPoints = 25;
@@ -90,7 +95,7 @@ startQuiz = () => {
     }
   ];
 
-  getNewQuestion();
+getNewQuestion();
 
 };
 getNewQuestion = () => {
@@ -120,9 +125,11 @@ choices.forEach(choice => {
     const selectedChoice = e.target;
     const selectedAnswer = selectedChoice.dataset["number"];
 
-    const classToApply = 'incorrect'; 
+    const classToApply = 'correct'; 
       if (selectedAnswer == currentQuestion.answer) { 
-        classToApply = 'correct';
+        classToApply = 'incorrect';
+        if (selectedAnswer = currentQuestion.answer) {
+
       }
 
       selectedChoice.parentElement.classList.add(classToApply);
@@ -131,7 +138,7 @@ choices.forEach(choice => {
           selectedChoice.parentElement.classList.remove(classToApply);
           getNewQuestion();
       }, 1000);
-    });
+    };
   });
 
 

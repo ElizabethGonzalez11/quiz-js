@@ -9,16 +9,33 @@
 </head>
 
 <body>
-  <div class=" container">
-    <div id="home" class="flex-center flex-column">
-      <h1>NURSING QUIZ</h1>
-       <p> 
-        Ready to learn some nursing material? You have 30 seconds to answer the following question. Be careful, if you select the wrong answer 10 seconds will be deducted from the timer. Good luck!
-       </p>
-       <a class="btn" href = "quiz.html">START QUIZ</a>
-       <a class="btn" href = "highscores.html">HIGH SCORES</a>
+  <section class = "quiz-container flex-column">
+    <ul class="score-box flex-column hidden" id="scoreboard"></ul>
+    <div class="hud flex-row hidden">
+      <p class="hud-items" id="time">Time remaining: 60</p>
+      <p class = "hud-items" id="score">Score: 0</p>
     </div>
+
+    <div class="question-section hidden"></div>
+
+    <div class="answer-section flex-row hidden"></div>
+    <div class="feedback-section flex-row">
+      <button class="btn" id="start-btn">Start Quiz</button>
+      <button class="btn hidden" id="restart-btn">Restart</button>
+      
+    </div>
+
+  
+  <div class="final-score hidden">
+    <h2> Great Job!</h2>
+    <h3> Here is your final score: <span id="final-score">0</span></h3>
+    <label for="initials">Enter initials:</label>
+    <input type="text" name="initials-box" maxlength="5" id="initials">
+    <button class="submit-btn" id="submit">SUBMIT</button>
   </div>
+</section>
+  
+  <script src = "Assets/js/script.js"></script>
 
 </body>
 </html>
