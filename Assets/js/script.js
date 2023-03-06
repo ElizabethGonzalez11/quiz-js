@@ -1,104 +1,160 @@
-const timeElement = document.querySelector("#time");
-const scoreElement = document.querySelector("score");
-const startBtn = document.querySelector("#start-btn");
-const restartBtn = document.querySelector("#restart-btn");
-const questionElement = document.querySelector(".question-section");
-const answerElement = document.querySelector(".answer-section");
-const feedbackElement = document.querySelector(".feedback-section");
-const hudElement = document.querySelector(".hud-box");
+var questionsEl = document.querySelector("#questions");
+var timerEl = document.querySelector("#time");
+var choicesEl = document.querySelector("#choices");
+var submitBtn = document.querySelector("#submit");
+var startBtn = document.querySelector("#start");
+var initialsEl = document.querySelector("#initials");
+var feedbackEl = document.querySelector("#feedback");
 
-const points = 100;
 
-let score = 0;
-let timeRemaining = 60;
-let currentQuestionIndex;
-let questionPool;
-let loadedQuestion;
-
-let questions = [
-  { question: " What is a normal resting heart rate?",
-    answers: [
-    {text: " 50 to 90 beats per minute", correct: false},
-    {text: " 60 to 100 beats per minute ", correct: true},
-    {text: " 30 to 50 beats per minute", correct: false},
-    {text: "100 to 120 beats per minute", correct: false},
-    ]},
-
-  { question: "What is hypotension?",
-    answers: [
-    {text: "low blood sugar", correct: false},
-    {text: "low blood pressure", correct: false},
-    {text: "high blood pressure", correct: true},
-    {text: "high blood sugar", correct: false},
-    ]},
-
-  { question: "When should a nurse weigh a patient to obtain the most accurate weight:? ",
-    answers: [
-    {text: "right after eating", correct: false},
-    {text: "2 to 3 hours after after eating", correct: false},
-    {text: "at the same time everyday", correct: true},
-    {text: "right after they wake up", correct: false},
-    ]},
-
-  { question: "What is a normal internal body temperature?",
-    answers: [
-    {text: "98.6° F ", correct: true},
-    {text: "99.9° F", correct: false},
-    {text: "96° F", correct: false},
-    {text: "100.4° F", correct: false},
-    ]},
-  ];
-
-startBtn.addEventListener ('click', startQuiz);
+var currentQuestionIndex = 0;
+var time = questions.length * 15;
+var timerId;
 
 function startQuiz() {
-  restart ()
-  questionPool = questionPool.sort(() => Math.random() - .5);
-  currentQuestionIndex = 0;
-  quizUi ();
-  quizTimer ();
-  loadQuestion ();
+  // hide start screen
+  var startScreenEl = document.getElementById("start-screen");
+  startScreenEl.setAttribute("class", "hide");
+
+  // un-hide questions section
+  questionsEl.removeAttribute("class");
+
+  // start timer
+  timerId = setInterval(clockTick, 1000);
+
+  // show starting time
+  timerEl.textContent = time;
+
+  getQuestion();
 }
-function loadQuestion () {
-  blankSlate ()
-  getNewQuestion (questionPool[currentQuestionIndex]);
+
+function getQuestion() {
+  // get current question object from array
+  var currentQuestion = questions[currentQuestionIndex];
+
+  // update title with current question
+  var titleEl = document.getElementById("question-title");
+  titleEl.textContent = currentQuestion.title;
+
+  // clear out any old question choices
+  choicesEl.innerHTML = "";
+
+  // loop over choices
+  currentQuestion.choices.forEach(function(choice, i) {
+    // create new button for each choice
+    var choiceNode = document.createElement("button");
+    choiceNode.setAttribute("class", "choice");
+    choiceNode.setAttribute("value", choice);
+
+    choiceNode.textContent = i + 1 + ". " + choice;
+
+    // attach click event listener to each choice
+    choiceNode.onclick = questionClick;
+
+    // display on the page
+    choicesEl.appendChild(choiceNode);
+  });
 }
 
-function loadQuestion(question) {
-questionElement.innerHTML = question.question
+function questionClick() {
+  // check if user guessed wrong
+  if (this.value !== questions[currentQuestionIndex].answer) {
+    // penalize time
+    time -= 15;
 
- question.answers.forEach(answers => {
-  const button = document.createElement('button')
-  button.innerText = answers.text
-  button.classList.add('btn')
+    if (time < 0) {
+      time = 0;
+    }
+    // display new time on page
+    timerEl.textContent = time;
+    feedbackEl.textContent = "Wrong!";
+    feedbackEl.style.color = "red";
+    feedbackEl.style.fontSize = "400%";
+  } else {
+    feedbackEl.textContent = "Correct!";
+    feedbackEl.style.color = "green";
+    feedbackEl.style.fontSize = "400%";
+  }
 
-  if(answers.correct){button.dataset.correct = answers.correct}
+  // flash right/wrong feedback
+  feedbackEl.setAttribute("class", "feedback");
+  setTimeout(function() {
+    feedbackEl.setAttribute("class", "feedback hide");
+  }, 1000);
 
-  button.addEventListener('click', selectAnswer)
-  answerElement.appendChild(button)
-  console.log(answers.correct)
-});}
+  // next question
+  currentQuestionIndex++;
 
-function selectAnswer (e){
-  const selectedButton = e.target
-  const correct = selectedButton.dataset.correct
-  Array.from(answerElement.children).forEach(button => {
-    setClass(button.dataset.correct)
-  })
-  if(correct) {
-  incrementScore(points)
-  console.log("That is correct!")
-} else {
-  console.log('That is incorrect!')
-  timeLeft = timeLeft - 10
+  // time checker
+  if (currentQuestionIndex === questions.length) {
+    quizEnd();
+  } else {
+    getQuestion();
+  }
 }
-  if (questionPool.length > currentQuestionIndex +1){
-    setTimeout (loadQuestion,1000);
-  }else{
-    console.log("Quiz over!");
-    quizOver()
+
+function quizEnd() {
+  // stop timer
+  clearInterval(timerId);
+
+  // show end screen
+  var endScreenEl = document.getElementById("end-screen");
+  endScreenEl.removeAttribute("class");
+
+  // show final score
+  var finalScoreEl = document.getElementById("final-score");
+  finalScoreEl.textContent = time;
+
+  // hide questions section
+  questionsEl.setAttribute("class", "hide");
+}
+
+function clockTick() {
+  // update time
+  time--;
+  timerEl.textContent = time;
+
+  // check if user ran out of time
+  if (time <= 0) {
+    quizEnd();
   }
-    currentQuestionIndex++
+}
+
+function saveHighscore() {
+  // get value of input box
+  var initials = initialsEl.value.trim();
+
+  if (initials !== "") {
+    // get saved scores from localstorage, or if not any, set to empty array
+    var highscores =
+      JSON.parse(window.localStorage.getItem("highscores")) || [];
+
+    // format new score object for current user
+    var newScore = {
+      score: time,
+      initials: initials
+    };
+
+    // save to localstorage
+    highscores.push(newScore);
+    window.localStorage.setItem("highscores", JSON.stringify(highscores));
+
+    // redirect to next page
+    window.location.href = "highscores.html";
   }
-function quizOver();
+}
+
+function checkForEnter(event) {
+  // "13" represents the enter key
+  if (event.key === "Enter") {
+    saveHighscore();
   }
+}
+
+// submit initials
+submitBtn.onclick = saveHighscore;
+
+// start quiz
+startBtn.onclick = startQuiz;
+
+initialsEl.onkeyup = checkForEnter;
