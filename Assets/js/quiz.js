@@ -20,7 +20,7 @@ var questions = [
     },
   
     {
-      title: "When should a nurse weigh a patient to obtain the most accurate weight:? ",
+      title: "When should a nurse weigh a patient to obtain the most accurate weight? ",
       choices: [
        "right after eating",
        "2 to 3 hours after after eating",
